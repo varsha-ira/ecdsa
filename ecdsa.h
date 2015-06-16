@@ -66,11 +66,6 @@ class Sig
     void key_gen();
     void sign( const string );
     bool vrfy( const string );
-    void set_sig( EC_POINT );
-    ec_point_st* get_Q();
-    ec_point_st* get_sig();
-    ec_point_st* get_G();
-    void sig_print( const string );
     static void init()
     {
       mpz_init(tmp);
@@ -82,11 +77,9 @@ class Sig
       point_init(G, ec);
 
       gen_G();
-      // cout << "G: \n";
       // point_print("", G);
 
       field_init(f, "bn254_fp");
-      // gmp_printf ("%s is an mpz %Zd\n", "order of f", f->order);
       
       // init of random num
       gmp_randinit_default(r_state);
@@ -145,35 +138,15 @@ Sig::~Sig()
   mpz_clear(d);
 }
 
-void Sig::set_sig(EC_POINT s)
-{
-  // point_set( this->s , s );
-}
-
-ec_point_st* Sig::get_Q()
-{
-  return this->Q;
-}
-
-ec_point_st* Sig::get_sig()
-{
-  // return this->s;
-}
-
-ec_point_st* Sig::get_G()
-{
-  return this->G;
-}
-
 // Key Generation
 void Sig::key_gen()
 {
-  // *** generation of secret key 'd' (random value) ***
+// *** generation of secret key 'd' (random value) ***
   // Generate a uniform random integer in the range 0 to n-1, inclusive.
   mpz_urandomm(d, this->r_state, this->n);
   // gmp_printf("scret key d: %Zx\n", d);
 
-  // *** generation of public key 'Q' ***
+// *** generation of public key 'Q' ***
   point_mul(Q, d, G);  // Q ← G^d
 }
 
@@ -186,7 +159,7 @@ void Sig::key_gen()
 
 void Sig::sign( const string M )
 {
-  // *** initialization ***
+// *** initialization ***
 	unsigned char hash[SHA256_DIGEST_LENGTH];
 
   mpz_t m, k, t;
@@ -199,12 +172,11 @@ void Sig::sign( const string M )
   point_init(T, ec);
 
 
-  // *** generation of signature 'S = (r,s)' ***
+// *** generation of signature 'S = (r,s)' ***
   do {
     // Generate a uniform random integer in the range 0 to n-1, inclusive.
     mpz_urandomm(k, this->r_state, this->n);
     // gmp_printf("radom num k: %Zx\n", k);
-
 
     point_mul(P, k, G);  // P ← k*G
     // point_print("P: ", P);
@@ -216,13 +188,13 @@ void Sig::sign( const string M )
     mpz_mod(this->r, this->r, this->n);   // r = x1 mod n
 
 
-    // *** ハッシュ計算 ***
+  // *** ハッシュ計算 ***
     // *** m ← H(M) ***
     SHA256( (unsigned char *)M.c_str(), M.length(), hash );
     mpz_set_str(m, get_hex_string(hash, SHA256_DIGEST_LENGTH ).c_str(), 16);
     // gmp_printf("m: %Zx\n", m);
     
-    // *** compute 's' ***
+  // *** compute 's' ***
     // * s = k^(-1)*(m+d*r) mod n
     mpz_invert(k, k, this->n);  // k = k^-1
     mpz_mul(t, d, r);  // t = d*r
@@ -234,7 +206,7 @@ void Sig::sign( const string M )
   } while ( mpz_sgn(r) == 0 or mpz_sgn(s) == 0 );
   // r == 0 or s == 0
 
-  // *** finalization ***
+// *** finalization ***
   mpz_clear(t);
   mpz_clear(k);
   mpz_clear(m);
@@ -245,28 +217,28 @@ void Sig::sign( const string M )
 // Verification
 bool Sig::vrfy(const string M )
 {
-  // *** initialization ***
-  mpz_t m, u1, u2, t;
-  EC_POINT R, T1, T2;
+// *** initialization ***
 	unsigned char hash[SHA256_DIGEST_LENGTH];
   bool rslt = false;
 
+  mpz_t m, u1, u2, t;
   mpz_init(m);
   mpz_init(u1);
   mpz_init(u2);
   mpz_init(t);
+
+  EC_POINT R, T1, T2;
   point_init(R, ec);
   point_init(T1, ec);
   point_init(T2, ec);
 
-  // *** ハッシュ計算 ***
+// *** ハッシュ計算 ***
   // *** m ← H(M) ***
   SHA256( (unsigned char *)M.c_str(), M.length(), hash );
-  // cout << "H(M): " << get_hex_string( hash, SHA256_DIGEST_LENGTH ) << endl; 
   mpz_set_str(m, get_hex_string(hash, SHA256_DIGEST_LENGTH ).c_str(), 16);
   // gmp_printf("m: %Zx\n", m);
 
-  // *** compute u1, u2 ***
+// *** compute u1, u2 ***
   mpz_invert(t, this->s, this->n); // t = s^(-1)
   // u1 = m*s^(-1) mod n
   mpz_mul(u1, m, t);        // u1 = m*t = m*s^(-1)
@@ -276,18 +248,17 @@ bool Sig::vrfy(const string M )
   mpz_mod(u2, u2, this->n); // u2 = r*t = r*s^(-1) mod n
 
 
-  // *** compute R = (xr, yr) ***
-  // *** R = (xr, yr) = u1*G - u2*Q
+// *** compute R = (xr, yr) ***
+// *** R = (xr, yr) = u1*G - u2*Q
 
   point_mul(T1, u1, this->G);  // T1 ← u1*G
   point_mul(T2, u2, this->Q);  // T2 ← u2*Q
   // point_sub(R, T1, T2); // R = T1 - T2 = u1*G - u2*Q
   point_add(R, T1, T2); // R = T1 + T2 = u1*G + u2*Q
 
-  // element_print("R->x: ", R->x);
-  
   set_mpz_from_element(t, R->x); 
   mpz_mod(t, t, this->n);
+
   if (mpz_cmp(t, this->r) == 0) {
     // if t eq r then valid
     rslt =  true;
@@ -297,7 +268,7 @@ bool Sig::vrfy(const string M )
   }
 
 
-  // *** finalization ***
+// *** finalization ***
   mpz_clear(m);
   mpz_clear(u1);
   mpz_clear(u2);
@@ -343,9 +314,4 @@ void Sig::set_mpz_from_element(mpz_t tmp, Element x)
   // gmp_printf ("%s is an mpz %Zx\n", "value of x", tmp);
 
   delete [] str;
-}
-
-void Sig::sig_print( const string str )
-{
-  // point_print(str, this->s);
 }
