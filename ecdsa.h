@@ -201,7 +201,11 @@ void Sig::sign( const string M )
     mpz_add(t, m, t); // t = m+t = m+d*r
     mpz_mul(s, k, t); // s = t = k*t = k^(-1)*(m+d*r)
     mpz_mod(s, s, this->n);
-    // gmp_printf("s: %Zx\n", s);
+    /*
+    cout << "** Signature S = (r,s)\n";
+    gmp_printf("r: %Zx\n", r);
+    gmp_printf("s: %Zx\n\n", s);
+    */
 
   } while ( mpz_sgn(r) == 0 or mpz_sgn(s) == 0 );
   // r == 0 or s == 0
