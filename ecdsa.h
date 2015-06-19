@@ -63,6 +63,7 @@ class Sig
   public:
     Sig();
     ~Sig();
+    mpz_t* get_sig(char*);  // char c = "r" or "s"
     void key_gen();
     void sign( const string );
     bool vrfy( const string );
@@ -136,6 +137,19 @@ Sig::~Sig()
   mpz_clear(r);
   mpz_clear(s);
   mpz_clear(d);
+}
+
+mpz_t* Sig::get_sig(char* c)
+{
+  if (c == "r") {
+    return &this->r;
+  } else if (c == "s") {
+      return &this->s;
+  } else {
+    cout << "get_sig: argument is 'r' or 's'\n";
+    return 0;
+  }
+
 }
 
 // Key Generation
