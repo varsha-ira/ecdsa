@@ -31,8 +31,8 @@ int main()
 {
   // 乱数のシードを現在の時刻で初期化
   srand((unsigned)time(NULL));
-  const unsigned int num = 1000;
-  const char str_len = 10;
+  const unsigned int num = 10000;
+  const char str_len = 100;
   string text_data[num];
 
   // len文字のnum個の文字列を作成する
