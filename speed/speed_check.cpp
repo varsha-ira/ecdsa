@@ -1,10 +1,11 @@
 #undef NDEBUG
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <assert.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <cstdlib>
 
 #include "../ecdsa.h"
  
@@ -41,7 +42,6 @@ int main()
 {
   // 乱数のシードを現在の時刻で初期化
   srand((unsigned)time(NULL));
-  // const unsigned int num = 10000;
   const unsigned int num = 100;
   const char str_len = 100;
   string text_data[num];
