@@ -26,10 +26,10 @@ $ make
 $ ./main
 ```
 
-サンプルコード
+**サンプルコード**  
 使い方はサンプルコードを参照されたし。
+
 ```cpp
-#undef NDEBUG
 #include <iostream>
 #include <assert.h>
 
@@ -64,7 +64,7 @@ $ ./speed_check
 
 ## ライセンス
 
-This software is released under the MIT License, see [LICENSE.txt](LICENCE.txt)
+This software is released under the MIT License, see [LICENCE.txt](LICENCE.txt)
 
 ## 参考文献
 
