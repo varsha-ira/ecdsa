@@ -1,33 +1,33 @@
-ECDSA署名実装
+IMPLEMENTATION OF ECDSA SIGNATURE
 ====
 
-TEPLA(University of Tsukuba
-Elliptic Curve and Pairing Library)を利用したECDSA署名の実装
+I implement ECDSA signature by using TEPLA(University of Tsukuba Elliptic Curve and Pairing Library).
 
-## 詳細
-TEPLAで128bitセキュリティのECDSA署名を実装したため公開する。
-あくまで、研究の評価を行うために作成したためClass等のインターフェースはまだまだ不十分であると思われるため要望があれば順次対応するつもりである。  
-また、バグ等の指摘も歓迎します。  
-簡単な実装の解説PDFも添付しています。(*[ecdsa_presen.pdf](ecdsa_presen.pdf)*)  
-また、適当な平文に署名をつけ、検証を行う実装速度の測定プログラムも作成しています。
+## Detail
+I publish program source codes of ECDSA signature on 128 bit security.
+I implemented this program to evaluate my proposed method in my research,
+so I think it an imperfect implemantation about Class interfaces and so on.
+If you had some requests, comments or bug reports, I will respond it as much as I can. 
+And I attach a simple explanation PDF file of my implemantation in Japanese. (*[ecdsa_presen.pdf](ecdsa_presen.pdf)*)  
+Also I implemented speed determination programs that signs some plaintexts and verifies signatures.
 
-## 環境
+## Environment
 * gcc
 * TEPLA1.0  
-  DockerのTEPLAイメージファイルを作成したためこれを利用すると環境導入が容易になる。
+  I create TEPLA image file of Docker, so you can easily install the environment if you used this. 
 <https://registry.hub.docker.com/u/natsu/tepla/>
 
 
-## 使い方
+## Usage
 
-### サンプルコードの実行
+### Execution of sample code
 ```sh
 $ make
 $ ./main
 ```
 
-**サンプルコード**  
-使い方はサンプルコードを参照されたし。
+**Sample Code**  
+Please, refer the following sample code and understand how to use this program.
 
 ```cpp
 #include <iostream>
@@ -54,19 +54,19 @@ int main()
 
 ```
 
-### 速度測定方法
+### Speed determination way
 ```sh
 $ cd speed
 $ make
 $ ./speed_check
 ```
-平文の個数は*speed_check.cpp*の*num*で指定、平文の文字列は*str_len*を変更すると良い。
+You can assign the number of plaintexts and the length of plaintexts, each value is *num* and *str_len* in *speed_check.cpp*.
 
-## ライセンス
+## LICENCE
 
 This software is released under the MIT License, see [LICENCE.txt](LICENCE.txt)
 
-## 参考文献
+## Reference
 
 * [TEPLA](http://www.cipher.risk.tsukuba.ac.jp/tepla/)
 * [ECDSA 評価報告書](http://www.cryptrec.go.jp/estimation/rep_ID0003.pdf)
