@@ -42,7 +42,7 @@ void element_print(const string s, const Element x)
   delete [] str;
 }
 
-// バイト列の配列データを16進の文字列データに変換する
+// transform array data of byte sequences into string data of hexadecimal
 string get_hex_string( unsigned char *data, size_t n )
 {
   stringstream ss;
@@ -50,8 +50,8 @@ string get_hex_string( unsigned char *data, size_t n )
 	for ( size_t i = 0; i < n; i++ )
 	{
     // cout << std::hex << std::setw(2) << std::setfill('0') << (int)data[i];
-    // 2 byte分のデータを16進の文字列に変換して連結
-    // (dataをintへキャストをしないとうまく動かない)
+    // transform 2 byte data into string of hexadecimal and connect
+    // (if it casted data into int, don't run)
     ss << std::hex << std::setw(2) << std::setfill('0') << (int)data[i];
 	}
 
@@ -195,14 +195,14 @@ void Sig::sign( const string M )
     point_mul(P, k, G);  // P ← k*G
     // point_print("P: ", P);
 
-    // 念のためアフィン座標に変換(出力してみたらz座標が1であったため必要ない気がする)
+    // translate into affine coordinate just in case(, but this handling may be not necessary becase output z-coordinate value was 1)
     point_make_affine(T, P);
     // element_print("x is ", T->x); element_print("y is ", T->y); element_print("z is ", T->z);
     set_mpz_from_element(this->r, T->x); 
     mpz_mod(this->r, this->r, this->n);   // r = x1 mod n
 
 
-  // *** ハッシュ計算 ***
+  // *** Hash Computation ***
     // *** m ← H(M) ***
     SHA256( (unsigned char *)M.c_str(), M.length(), hash );
     mpz_set_str(m, get_hex_string(hash, SHA256_DIGEST_LENGTH ).c_str(), 16);
@@ -250,7 +250,7 @@ bool Sig::vrfy(const string M )
   point_init(T1, ec);
   point_init(T2, ec);
 
-// *** ハッシュ計算 ***
+// *** Hash Computation ***
   // *** m ← H(M) ***
   SHA256( (unsigned char *)M.c_str(), M.length(), hash );
   mpz_set_str(m, get_hex_string(hash, SHA256_DIGEST_LENGTH ).c_str(), 16);
